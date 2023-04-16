@@ -6,6 +6,8 @@ const User = mongoose.model('User');
 const passport = require('passport');
 const { loginUser, restoreUser } = require('../../config/passport');
 const { isProduction } = require('../../config/keys');
+const validateRegisterInput = require('../../validations/register');
+const validateLoginInput = require('../../validations/login');
 
 
 /* GET users listing. */
@@ -15,7 +17,7 @@ router.get('/', function(req, res, next) {
   })
 });
 
-router.post('/register', async (req, res, next) => {
+router.post('/register', validateRegisterInput, async (req, res, next) => {
 
   // first query the db to find documents that align with the expressions 
   //inside the User.findOne mongoose/mongoDB method
@@ -65,7 +67,7 @@ router.post('/register', async (req, res, next) => {
 //the first is 'local' : this tells Passport to use the LocalStrategy method to auth the user
 // If a user is successfully authenticated, return the user
 // Otherwise return a 400 error res
-router.post('/login', async(req, res, next) => {
+router.post('/login', validateLoginInput, async(req, res, next) => {
   passport.authenticate('local', async function (err, user) {
     if (err) return next(err);
     if (!user) {
