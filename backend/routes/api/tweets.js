@@ -13,33 +13,31 @@ router.get('/', async (req, res) => {
         //populate returns the _id and username of each author
         //MongoDb names the primary key _id rather than id.
         const tweets = await Tweet.find()
-                                  .populate("author", "_id username")
-                                  .sort({ createdAt: -1 });
+            .populate("author", "_id username")
+            .sort({ createdAt: -1 });
         return res.json(tweets);
     }
-    catch(err) {
-        return res.json([])
+    catch (err) {
+        return res.json([]);
     }
-});
+})
 
 router.get('/user/:userId', async (req, res, next) => {
     let user;
-    //first try block: first check to see if that user exists
-
     try {
+        //first try block: first check to see if that user exists
         user = await User.findById(req.params.userId);
-    } catch(err) {
+    } catch (err) {
         const error = new Error('User not found');
         error.statusCode = 404;
         error.errors = { message: "No user found with that id" };
         return next(error);
     }
-
-    // 2nd try block: if that user exists, check to see if they have tweets"
     try {
+        // 2nd try block: if that user exists, check to see if they have tweets"
         const tweets = await Tweet.find({ author: user._id })
-                                  .sort({ createdAt: -1 })
-                                  .populate("author", "_id username");
+            .sort({ createdAt: -1 })
+            .populate("author", "_id username");
         return res.json(tweets);
     }
     catch (err) {
@@ -50,7 +48,7 @@ router.get('/user/:userId', async (req, res, next) => {
 router.get('/:id', async (req, res, next) => {
     try {
         const tweet = await Tweet.findById(req.params.id)
-                                 .populate("author", "_id username");
+            .populate("author", "_id username");
         return res.json(tweet);
     }
     catch (err) {
@@ -59,7 +57,7 @@ router.get('/:id', async (req, res, next) => {
         error.errors = { message: "No tweet found with that id" };
         return next(error);
     }
-});
+})
 
 
 // Attach requireUser as a middleware before the route handler to gain access
@@ -81,7 +79,5 @@ router.post('/', requireUser, validateTweetInput, async (req, res, next) => {
         next(err);
     }
 });
-
-
 
 module.exports = router;
