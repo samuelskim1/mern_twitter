@@ -1,3 +1,5 @@
+// src/store/session.js
+
 import jwtFetch from './jwt';
 
 const RECEIVE_CURRENT_USER = "session/RECEIVE_CURRENT_USER";
@@ -7,24 +9,24 @@ export const RECEIVE_USER_LOGOUT = "session/RECEIVE_USER_LOGOUT";
 
 // Dispatch receiveCurrentUser when a user logs in.
 const receiveCurrentUser = currentUser => ({
-    type: RECEIVE_CURRENT_USER,
-    currentUser
+  type: RECEIVE_CURRENT_USER,
+  currentUser
 });
-
+  
 // Dispatch receiveErrors to show authentication errors on the frontend.
 const receiveErrors = errors => ({
-    type: RECEIVE_SESSION_ERRORS,
-    errors
+  type: RECEIVE_SESSION_ERRORS,
+  errors
 });
 
 // Dispatch logoutUser to clear the session user when a user logs out.
 const logoutUser = () => ({
-    type: RECEIVE_USER_LOGOUT
+  type: RECEIVE_USER_LOGOUT
 });
 
 // Dispatch clearSessionErrors to clear any session errors.
 export const clearSessionErrors = () => ({
-    type: CLEAR_SESSION_ERRORS
+  type: CLEAR_SESSION_ERRORS
 });
 
 export const signup = user => startSession(user, 'api/users/register');
@@ -34,8 +36,8 @@ export const logout = () => dispatch => {
     dispatch(logoutUser());
 };
 
-
 const startSession = (userInfo, route) => async dispatch => {
+    debugger;
     try {
         const res = await jwtFetch(route, {
             method: "POST",
@@ -52,20 +54,6 @@ const startSession = (userInfo, route) => async dispatch => {
     }
 };
 
-const nullErrors = null;
-
-export const sessionErrorsReducer = (state = nullErrors, action) => {
-    switch (action.type) {
-        case RECEIVE_SESSION_ERRORS:
-            return action.errors;
-        case RECEIVE_CURRENT_USER:
-        case CLEAR_SESSION_ERRORS:
-            return nullErrors;
-        default:
-            return state;
-    }
-};
-
 const initialState = {
     user: undefined
 };
@@ -76,6 +64,21 @@ const sessionReducer = (state = initialState, action) => {
             return { user: action.currentUser };
         case RECEIVE_USER_LOGOUT:
             return initialState;
+        default:
+            return state;
+    }
+};
+
+
+const nullErrors = null;
+
+export const sessionErrorsReducer = (state = nullErrors, action) => {
+    switch (action.type) {
+        case RECEIVE_SESSION_ERRORS:
+            return action.errors;
+        case RECEIVE_CURRENT_USER:
+        case CLEAR_SESSION_ERRORS:
+            return nullErrors;
         default:
             return state;
     }
